@@ -16,5 +16,4 @@ Here are listed the outcomes of the thresholds on a test image:
 References
 ----------
 <a id="1">[1]</a> 
-T. Romen Singh et al. IJCSI International Journal of Computer Science Issues, Vol. 8, Issue 6, No 2, November 2011. 
-*"A New Local Adaptive Thresholding Technique in Binarization"*, Communications of the ACM, 11(3), 147-148.
+T. Romen Singh et al. *"A New Local Adaptive Thresholding Technique in Binarization"*, IJCSI International Journal of Computer Science Issues, Vol. 8, Issue 6, No 2, November 2011.
