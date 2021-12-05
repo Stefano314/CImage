@@ -231,7 +231,7 @@ thres_value, index = 120, 0
 func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, new_threshold]
 labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'New Technique']
 
-# The time basicaly do not depend on the window size here, because it is managed by numpy.
+# Interesting how fast the "new technique" is compared to the niblack and sauvola.
 for threshold in func_list:
     if threshold == global_threshold:
         beg = tm.perf_counter()
