@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void Save_Matrix(string name, vector<vector<unsigned int>> matrix){
+void SaveMatrix(string name, vector<vector<unsigned int>> matrix){
 	ofstream file;
 	file.open(name);
 	for(unsigned int i=0; i<matrix.size(); i++){
@@ -18,7 +18,7 @@ void Save_Matrix(string name, vector<vector<unsigned int>> matrix){
 	file.close();
 }
 	
-class Image {
+class cImage {
 private:
 	// Private Methods
 	unsigned int Get_ypixels(string filename);
@@ -29,9 +29,9 @@ public:
 	string image_name;
 	vector<vector<unsigned int>> image; // GL matrix
 	// Constructors & distructor
-	Image(){};
-	~Image(){};
-	Image(string filename){
+	cImage(){};
+	~cImage(){};
+	cImage(string filename){
 		x_pixels = Get_xpixels(filename);
 		y_pixels = Get_ypixels(filename);
 		image_name = filename;
@@ -49,15 +49,15 @@ public:
 	}
 	// Public Methods:
 	// General
-	void Save_Image(string name);
+	void SaveImage(string name);
 	void GetResolution();
 	//Operations
 	vector<vector<unsigned int>> SummedAreaTable();
 	unsigned int LocalIntensity(vector<vector<unsigned int>>& tabsum, unsigned int x, unsigned int y, unsigned int window);
-	Image Thresholding(unsigned int window, float k);
+	cImage Thresholding(unsigned int window, float k);
 };
 
-unsigned int Image::Get_ypixels(string filename){
+unsigned int cImage::Get_ypixels(string filename){
 	ifstream file(filename);
 	int len = file.tellg(); // Starting position
 	unsigned int rows = 0;
@@ -68,7 +68,7 @@ unsigned int Image::Get_ypixels(string filename){
 	return rows;
 }
 
-unsigned int Image::Get_xpixels(string filename){
+unsigned int cImage::Get_xpixels(string filename){
 	ifstream file(filename);
 	unsigned int n = 0, val =0;
 	int len = file.tellg(); // Starting position
@@ -82,11 +82,11 @@ unsigned int Image::Get_xpixels(string filename){
 	return n;
 }
 
-void Image::GetResolution(){
+void cImage::GetResolution(){
 	cout<<"- Image Resolution: "<<x_pixels<<"x"<<y_pixels<<endl;
 }
 
-vector<vector<unsigned int>> Image::SummedAreaTable(){
+vector<vector<unsigned int>> cImage::SummedAreaTable(){
 	unsigned long int value = 0;
 	vector<vector<unsigned int>> sat(y_pixels, vector<unsigned int>(x_pixels));
 	for(unsigned int i = 0; i < y_pixels; i++) {
@@ -105,13 +105,13 @@ vector<vector<unsigned int>> Image::SummedAreaTable(){
 	return sat;
 }
 
-unsigned int Image::LocalIntensity(vector<vector<unsigned int>>& tabsum, unsigned int x, unsigned int y, unsigned int window=7){
+unsigned int cImage::LocalIntensity(vector<vector<unsigned int>>& tabsum, unsigned int x, unsigned int y, unsigned int window=7){
 	unsigned int d = round(window/2 + 0.1);
 	return tabsum[x+d-1][y+d-1] + tabsum[x-d][y-d] - tabsum[x-d][y+d-1] - tabsum[x+d-1][y-d];
 }
 
-Image Image::Thresholding(unsigned int window=7, float k=0.2){
-	Image copy(image_name);
+cImage cImage::Thresholding(unsigned int window=7, float k=0.2){
+	cImage copy(image_name);
 	double m = 0;
 	vector<vector<unsigned int>> tabsum = copy.SummedAreaTable();
 	unsigned int d = round(window/2. + 0.1);
@@ -148,7 +148,7 @@ Image Image::Thresholding(unsigned int window=7, float k=0.2){
 	return copy;
 }
 
-void Image::Save_Image(string name){
+void cImage::SaveImage(string name){
 	ofstream file;
 	file.open(name);
 	for(unsigned int i=0; i<y_pixels; i++){
@@ -163,10 +163,10 @@ void Image::Save_Image(string name){
 int main()
 {
 	string filename("smile.txt"); // Image name
-	Image pic(filename); // Load image
+	cImage pic(filename); // Load image
 	//pic.GetResolution(); // Check image width
-	Image T_Image = pic.Thresholding(11,0.2);
+	cImage T_Image = pic.Thresholding(11,0.2);
 	T_Image.GetResolution();
-	T_Image.Save_Image("smile_threshold.txt");
+	T_Image.SaveImage("smile_threshold.txt");
 	return 0;
 }
