@@ -3,15 +3,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import time as tm
 
-# Original image plotting
-image = Image.open('boats.png').convert("L")
-image_np = np.asarray(image)
-plt.imshow(image_np, cmap='gray', vmin=0, vmax=255)
-plt.xlabel('X-Pixels', size = 12)
-plt.ylabel('Y-Pixels', size = 12)
-plt.title('Original Image', size = 15, fontweight = 'bold')
-plt.show()
-
 def local_intensity_sum(integral, window, x, y):
     '''
     Description
@@ -80,7 +71,7 @@ def global_threshold(image, threshold):
     work_image[image < threshold] = 0
     return work_image
 
-def bernsen_threshold(image, window = 31):
+def bernsen_threshold(image, window = 9):
     '''
     Description
     -----------
@@ -99,7 +90,7 @@ def bernsen_threshold(image, window = 31):
     -------
     output : numpy.array
     '''
-    work_image = np.copy(image)
+    work_image = np.copy(image).astype(np.int64)
     d = int(np.round(window / 2 + 0.1))
     work_image[:d, :] = 0  # Remove left column
     work_image[:, :d] = 0  # Remove top row
@@ -114,7 +105,7 @@ def bernsen_threshold(image, window = 31):
                 work_image[i, j] = 0
     return work_image
 
-def niblack_threshold(image, window = 11, k = -0.2):
+def niblack_threshold(image, window = 9, k = -0.15):
     '''
     Description
     -----------
@@ -137,8 +128,8 @@ def niblack_threshold(image, window = 11, k = -0.2):
     -------
     output : numpy.array
     '''
-    work_image = np.copy(image)
-    image_integral = image_np.cumsum(axis=0).cumsum(axis=1)
+    work_image = np.copy(image).astype(np.int64)
+    image_integral = image.cumsum(axis=0).cumsum(axis=1)
     d = int(np.round(window / 2 + 0.1))
     work_image[:d, :] = 0 # Remove left column
     work_image[:, :d] = 0 # Remove top row
@@ -151,7 +142,7 @@ def niblack_threshold(image, window = 11, k = -0.2):
             else: work_image[i,j] = 0
     return work_image
 
-def sauvola_threshold(image, window = 11, k = 0.3):
+def sauvola_threshold(image, window = 9, k = 0.1):
     '''
     Description
     -----------
@@ -173,8 +164,8 @@ def sauvola_threshold(image, window = 11, k = 0.3):
     -------
     output : numpy.array
     '''
-    work_image = np.copy(image)
-    image_integral = image_np.cumsum(axis = 0).cumsum(axis = 1)
+    work_image = np.copy(image).astype(np.int64)
+    image_integral = image.cumsum(axis = 0).cumsum(axis = 1).astype(np.int64)
     d = int(np.round(window / 2 + 0.1))
     work_image[:d, :] = 0  # Remove left column
     work_image[:, :d] = 0  # Remove top row
@@ -189,7 +180,7 @@ def sauvola_threshold(image, window = 11, k = 0.3):
                 work_image[i, j] = 0
     return work_image
 
-def new_threshold(image, window = 11, k = 0.1):
+def new_threshold(image, window = 9, k = 0.07):
     '''
     Description
     -----------
@@ -211,8 +202,8 @@ def new_threshold(image, window = 11, k = 0.1):
     -------
     output : numpy.array
     '''
-    work_image = np.copy(image)
-    image_integral = image_np.cumsum(axis = 0).cumsum(axis = 1)
+    work_image = np.copy(image).astype(np.int64)
+    image_integral = image.cumsum(axis = 0).cumsum(axis = 1).astype(np.int64)
     d = int(np.round(window / 2 + 0.1))
     work_image[:d, :] = 0  # Remove left column
     work_image[:, :d] = 0  # Remove top row
@@ -221,7 +212,7 @@ def new_threshold(image, window = 11, k = 0.1):
     for i in range(d, image.shape[0] - d):  # y values, removing borders
         for j in range(d, image.shape[1] - d):  # x values, removing borders
             m = local_mean_intensity(local_intensity_sum(image_integral, window, i, j), window)
-            if image[i, j] >= m * (1 + k*((image[i, j]-m)/(1-image[i, j] + m) - 1)):
+            if image[i, j] >= m * (1 + k*((image[i, j]-m)/(1.00000001-image[i, j] + m) - 1)):
                 work_image[i, j] = 255
             else:
                 work_image[i, j] = 0
@@ -231,19 +222,26 @@ thres_value, index = 120, 0
 func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, new_threshold]
 labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'New Technique']
 
-# Interesting how fast the "new technique" is compared to the niblack and sauvola.
+# Original image plot
+image = Image.open('smile.png').convert("L")
+image_np = np.asarray(image).astype(np.int16)
+plt.imshow(image_np, cmap='gray', vmin=0, vmax=255)
+plt.axis('off')
+plt.title('Original Image', size = 15, fontweight = 'bold')
+plt.show()
+
+# Thresholds Plots
 for threshold in func_list:
     if threshold == global_threshold:
         beg = tm.perf_counter()
         t_image = threshold(image_np, thres_value)
-        print(labels[index]+':', tm.perf_counter()-beg)
+        print(labels[index]+':', np.around(tm.perf_counter() - beg, 4),'s')
     else:
         beg = tm.perf_counter()
         t_image = threshold(image_np)
-        print(labels[index]+':', tm.perf_counter() - beg)
+        print(labels[index]+':', np.around(tm.perf_counter() - beg, 2),'s')
     plt.imshow(t_image, cmap='gray', vmin=0, vmax=255)
-    plt.xlabel('X-Pixels', size = 12)
-    plt.ylabel('Y-Pixels', size = 12)
+    plt.axis('off')
     plt.title(labels[index], size = 15, fontweight = 'bold')
     index += 1
     plt.show()
