@@ -220,7 +220,7 @@ def sauvola_threshold(image, window = 13, k = 0.1, vectorized=True):
         work_image = np.where(work_image >= threshold, 255, 0)
     return work_image
 
-def new_threshold(image, window = 13, k = 0.03, vectorized=True):
+def singh_threshold(image, window = 13, k = 0.03, vectorized=True):
     '''
     Description
     -----------
@@ -255,19 +255,19 @@ def new_threshold(image, window = 13, k = 0.03, vectorized=True):
         for i in range(d, image.shape[0] - d):  # y values, removing borders
             for j in range(d, image.shape[1] - d):  # x values, removing borders
                 m = local_mean_intensity(local_intensity_sum(image_integral, window, i, j), window)
-                if image[i, j] >= m * (1 + k*((image[i, j]-m)/(1.00000001-image[i, j] + m) - 1)):
+                if image[i, j] >= m * (1 + k*((image[i, j]-m)/(255-image[i, j] + m) - 1)):
                     work_image[i, j] = 255
                 else:
                     work_image[i, j] = 0
     else:
         ker = np.ones((window,window))/window**2
         loc_mean = convolve(image.astype(np.float32), ker, mode = 'constant')
-        threshold = loc_mean * (1 + k*( (image-loc_mean)/(1-image+loc_mean) -1) )
+        threshold = loc_mean * (1 + k*( (image-loc_mean)/(255-image+loc_mean) -1) )
         work_image = np.where(work_image >= threshold, 255, 0)
     return work_image
 
-func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, new_threshold]
-labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'New Technique']
+func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, singh_threshold]
+labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'Singh Technique']
 # Original image plot
 image = Image.open('image_test1.png').convert("L")
 image_np = np.asarray(image).astype(np.int16)
