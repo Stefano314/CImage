@@ -266,6 +266,34 @@ def singh_threshold(image, window = 13, k = 0.03, vectorized=True):
         work_image = np.where(work_image >= threshold, 255, 0)
     return work_image
 
+def score(ref_image, image):
+    '''
+    Description
+    -----------
+    Perform a pixel-by-pixel quality comparison between a reference image and another one. The score value is the
+    fraction of different pixels between the two images. It allows only 8-bit images.
+
+    Parameters
+    ----------
+    ref_image : numpy.array
+        Intensity matrix of the reference image.
+    image : numpy.array
+        Intensity matrix of the analyzed image.
+
+    Notes
+    -----
+    - The images must have the same resolution.
+    - The differences are not necessarily synonym of worse quality, imagine the negative of the reference image.
+
+    Returns
+    -------
+    output : float
+    '''
+    ref_copy = np.where(ref_image >= 127, 1, 0)
+    img_copy = np.where(image >= 127, 1, 0)
+    diff_image = np.abs(img_copy - ref_copy)
+    return np.sum(diff_image)/image.size
+
 func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, singh_threshold]
 labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'Singh Technique']
 # Original image plot
