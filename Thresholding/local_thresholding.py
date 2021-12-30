@@ -289,10 +289,8 @@ def score(ref_image, image):
     -------
     output : float
     '''
-    ref_copy = np.where(ref_image >= 127, 1, 0)
-    img_copy = np.where(image >= 127, 1, 0)
-    diff_image = np.abs(img_copy - ref_copy)
-    return np.sum(diff_image)/image.size
+    diff_image = np.abs(ref_image - image)
+    return np.count_nonzero(diff_image)/image.size
 
 func_list = [global_threshold, bernsen_threshold, niblack_threshold, sauvola_threshold, singh_threshold]
 labels = ['Global Technique', 'Bersen Technique', 'Niblack Technique', 'Sauvola Technique', 'Singh Technique']
