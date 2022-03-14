@@ -19,7 +19,7 @@ The methods available are:
 - ```GetResolution()```: It shows the image resolutions.
 - ```SummedAreaTable()```: It creates a 2-D vector containing the *Summed-area table*.
 - ```LocalIntensity()```: It gives the value of the local intensity within a given window of an image.
-- ```Thresholding()```: This is the **threshold method** presented by the cited research groups[[1]](#1).
+- ```singh_threshold()```: This is the **threshold method** presented by the cited research groups[[1]](#1).
 -  ```SaveImage()```: Saves the image stored in the cImage object.
 
 Usage
@@ -29,7 +29,7 @@ The idea is to create the *cImage* object and then simply call its methods:
 int main() {
   string filename("ImageTest"); // Image name
   cImage fig(filename); // Load image
-  cImage trans_image = fig.Thresholding(11, 0.3); // Perform an operation
+  cImage trans_image = fig.singh_threshold(11, 0.3); // Perform an operation
   trans_image.SaveImage("trans_image"); // Save the result
 	return 0;
 }
