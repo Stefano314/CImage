@@ -21,16 +21,22 @@ void SaveMatrix(string name, vector<vector<unsigned int>> matrix){
 class cImage {
 private:
 	// Private Methods
-	unsigned int Get_ypixels(string filename);
-	unsigned int Get_xpixels(string filename);
-	
-public:
 	unsigned int x_pixels, y_pixels; //Attributes
 	string image_name;
 	vector<vector<unsigned int>> image; // GL matrix
+public:
 	// Constructors & distructor
 	cImage(){};
 	~cImage(){};
+	unsigned int Get_ypixels(string filename);
+	unsigned int Get_xpixels(string filename);
+	void SaveImage(string name);
+	void GetResolution();
+	//Operations
+	vector<vector<unsigned int>> SummedAreaTable();
+	unsigned int LocalIntensity(vector<vector<unsigned int>>& tabsum, unsigned int x, unsigned int y, unsigned int window);
+	cImage singh_treshold(unsigned int window, float k);
+	
 	cImage(string filename){
 		x_pixels = Get_xpixels(filename);
 		y_pixels = Get_ypixels(filename);
@@ -47,14 +53,6 @@ public:
 		}
 		file.close();
 	}
-	// Public Methods:
-	// General
-	void SaveImage(string name);
-	void GetResolution();
-	//Operations
-	vector<vector<unsigned int>> SummedAreaTable();
-	unsigned int LocalIntensity(vector<vector<unsigned int>>& tabsum, unsigned int x, unsigned int y, unsigned int window);
-	cImage Thresholding(unsigned int window, float k);
 };
 
 unsigned int cImage::Get_ypixels(string filename){
@@ -110,7 +108,7 @@ unsigned int cImage::LocalIntensity(vector<vector<unsigned int>>& tabsum, unsign
 	return tabsum[x+d-1][y+d-1] + tabsum[x-d][y-d] - tabsum[x-d][y+d-1] - tabsum[x+d-1][y-d];
 }
 
-cImage cImage::Thresholding(unsigned int window=7, float k=0.2){
+cImage cImage::singh_treshold(unsigned int window=7, float k=0.2){
 	cImage copy(image_name);
 	double m = 0;
 	vector<vector<unsigned int>> tabsum = copy.SummedAreaTable();
@@ -165,7 +163,7 @@ int main()
 	string filename("smile.txt"); // Image name
 	cImage pic(filename); // Load image
 	//pic.GetResolution(); // Check image width
-	cImage T_Image = pic.Thresholding(11,0.2);
+	cImage T_Image = pic.singh_treshold(11,0.2);
 	T_Image.GetResolution();
 	T_Image.SaveImage("smile_threshold.txt");
 	return 0;
